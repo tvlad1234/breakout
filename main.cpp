@@ -25,8 +25,6 @@ const int xbsize = 12;
 const int ybsize = 4;
 const int xbdist = 3;
 const int ybdist = 3;
-const int xbn = 8;
-const int ybn= 4;
 
 const int ballsize = 2;
 int xball = 64;
@@ -45,8 +43,8 @@ int i,j;
 
 void initBlocks()
 {
-  for(int i=0;i<ybn;i++)
-    for(int j=0;j<xbn;j++)
+  for(int i=0;i<xblock;i++)
+    for(int j=0;j<yblock;j++)
       blocks[i][j]=1;
 }
 
@@ -59,8 +57,8 @@ void setup(){
   arduboy.begin();
   arduboy.setFrameRate(60);
   initBlocks();
-  for(i=0;i<ybn;i++)
-    for(j=0;j<xbn;j++)
+  for(i=0;i<xblock;i++)
+    for(j=0;j<yblock;j++)
     {
       xcoord[i][j] = xblock+j*(xbsize+xbdist);
       ycoord[i][j] = yblock+i*(ybsize+ybdist);
@@ -82,23 +80,29 @@ void loop(){
   //xpaddle=xball; //asta face jocul sa se joace singur
 
   ///desenaza blocuri si detecteaza coliziuni
-  for(i=0;i<ybn;i++)
-    for(j=0;j<xbn;j++)
+  for(i=0;i<xblock;i++)
+    for(j=0;j<yblock;j++)
       if(blocks[i][j])
       {
-        if((xball>xcoord[i][j] && xball<xcoord[i][j]+xbsize+ballsize) && (yball>ycoord[i][j]&& yball<ycoord[i][j]+ybsize) &&ymov)
+        if((xball>xcoord[i][j] && xball<xcoord[i][j]+xbsize+ballsize) && ymov)
         {
-          breakBlock();
-          if(yball>ycoord[i][j])
-            ymov=-1;
-          else if(yball<ycoord[i][j]+ybsize-ballsize)
+          if(yball==ycoord[i][j])
+          {
             ymov=1;
+            breakBlock();
+          }
+          else if(yball==ycoord[i][j]+ybsize-ballsize)
+          {
+            ymov=-1;
+            breakBlock();
+          }
+            
         }
           
         arduboy.fillRoundRect(xcoord[i][j],ycoord[i][j],xbsize,ybsize,1);
       }
         
-  if(score==ybn*xbn)
+  if(score==xblock*yblock)
   {
     arduboy.clear();
     arduboy.setCursor(16,12);
