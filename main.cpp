@@ -1,3 +1,9 @@
+/*
+Breakout for Arduboy
+Vlad Tomoiaga
+january 2020
+ */
+
 #include <Arduino.h>
 #include <Arduboy2.h>
 
@@ -158,7 +164,7 @@ void loop(){
     else if(yball==bot-(ballsize+1) && ymov)
       {
         ymov=1;
-        if((xball<xpaddle || xball>xpaddle+paddlesize) && ymov)
+        if((xball<xpaddle-3 || xball>xpaddle+paddlesize+3) && ymov)
         {
           lifes--;
           ymov=0;
