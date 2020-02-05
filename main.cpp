@@ -1,7 +1,7 @@
 /*
 Breakout for Arduboy
 Vlad Tomoiaga
-january 2020
+February 2020
  */
 
 #include <Arduino.h>
@@ -9,7 +9,7 @@ january 2020
 
 Arduboy2 arduboy;
 
-const int top = 0;
+const int top = 4;
 const int bot = 64;
 const int left = 0;
 const int right = 128;
@@ -63,6 +63,16 @@ void setup(){
       xcoord[i][j] = xblock+j*(xbsize+xbdist);
       ycoord[i][j] = yblock+i*(ybsize+ybdist);
     }
+  arduboy.clear();
+  arduboy.setCursor(0,16);
+  arduboy.setTextSize(2);
+  arduboy.print("Breakout");
+  arduboy.setTextSize(1);
+  arduboy.setCursor(32,32);
+  arduboy.println("by Vlad Tomoiaga");
+  arduboy.display();
+  delay(3000);
+
         
 
 }
@@ -99,7 +109,7 @@ void loop(){
             
         }
           
-        arduboy.fillRoundRect(xcoord[i][j],ycoord[i][j],xbsize,ybsize,1);
+        arduboy.drawRoundRect(xcoord[i][j],ycoord[i][j],xbsize,ybsize,1);
       }
         
   if(score==xblock*yblock)
@@ -168,10 +178,18 @@ void loop(){
     else if(yball==bot-(ballsize+1) && ymov)
       {
         ymov=1;
-        if((xball<xpaddle-3 || xball>xpaddle+paddlesize+3) && ymov)
+        if((xball<xpaddle-5 || xball>xpaddle+paddlesize+5) && ymov)
         {
           lifes--;
           ymov=0;
+          //fa mingea sa clipeasca atunci cand nu nimereste paleta
+          arduboy.fillCircle(xball, yball, ballsize, BLACK);
+          arduboy.drawCircle(xball, yball, ballsize);
+          arduboy.display();
+          delay(400);
+          arduboy.fillCircle(xball, yball, ballsize, BLACK);
+          arduboy.display();
+          delay(400);
         }
           
       }
