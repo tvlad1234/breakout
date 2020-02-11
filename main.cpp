@@ -6,8 +6,10 @@ February 2020
 
 #include <Arduino.h>
 #include <Arduboy2.h>
+#include <ArduboyTones.h>
 
 Arduboy2 arduboy;
+ArduboyTones sound(arduboy.audio.enabled);
 
 const int top = 4;
 const int bot = 64;
@@ -40,6 +42,34 @@ int score = 0;
 int lifes = 3;
 
 int i,j;
+
+void soundEdge()
+{
+  sound.tone(5000, 5);
+}
+
+void soundBlock()
+{
+  sound.tone(3100, 9);
+}
+
+void gameOverSound()
+{
+  for(int freq=7000;freq>=200;freq-=50)
+  {
+    sound.tone(freq, 10);
+    delay(10);
+  }
+}
+
+void winSound()
+{
+  for(int freq=200;freq<=7000;freq+=50)
+  {
+    sound.tone(freq, 10);
+    delay(10);
+  }
+}
 
 void initBlocks()
 {
@@ -89,7 +119,7 @@ void loop(){
 
   //xpaddle=xball; //asta face jocul sa se joace singur
 
-  ///desenaza blocuri si detecteaza coliziuni
+  ///deseneaza blocuri si detecteaza coliziuni
   for(i=0;i<xblock;i++)
     for(j=0;j<yblock;j++)
       if(blocks[i][j])
@@ -100,11 +130,13 @@ void loop(){
           {
             ymov=1;
             breakBlock();
+            soundBlock();
           }
           else if(yball==ycoord[i][j]+ybsize-ballsize)
           {
             ymov=-1;
             breakBlock();
+            soundBlock();
           }
             
         }
@@ -119,6 +151,7 @@ void loop(){
     arduboy.setTextSize(2);
     arduboy.print("You Won!");
     arduboy.display();
+    winSound();
     arduboy.setTextSize(1);
     score=0;
     lifes=3;
@@ -167,19 +200,31 @@ void loop(){
 
 
   ///detectarea coliziunilor cu peretii/paleta
-  if(xball==left+(ballsize+1))
+  if(xball==left+(ballsize+1)&&ymov)
+  {
     xmov=1;
+    soundEdge();
+  }
     
-    else if(xball==right-(ballsize+1))
-      xmov=-1;
-
-  if(yball==top+(ballsize+1))
+  else if(xball==right-(ballsize+1)&& ymov)
+  {
+    xmov=-1;
+    soundEdge();
+  } 
+  if(yball==top+(ballsize+1)&&ymov)
+  {
     ymov=-1;
+    soundEdge();
+  }
+    
     else if(yball==bot-(ballsize+1) && ymov)
       {
         ymov=1;
+        soundEdge();
         if((xball<xpaddle-5 || xball>xpaddle+paddlesize+5) && ymov)
         {
+          delay(10);
+          sound.tone(1000, 50);
           lifes--;
           ymov=0;
           //fa mingea sa clipeasca atunci cand nu nimereste paleta
@@ -201,6 +246,7 @@ void loop(){
     arduboy.setTextSize(2);
     arduboy.print("GAME OVER");
     arduboy.display();
+    gameOverSound();
     arduboy.setTextSize(1);
     score=0;
     lifes=3;
