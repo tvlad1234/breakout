@@ -33,7 +33,6 @@ int xball = 64;
 int yball = bot-(ballsize+1);
 int ymov = 0; //poz sus, neg jos
 int xmov = 1; //pos st, neg dr
-
 int xpaddle = 64;
 const int paddlesize = 23;
 const int paddlespeed = 2;
@@ -100,8 +99,11 @@ void setup(){
   arduboy.setTextSize(1);
   arduboy.setCursor(32,32);
   arduboy.println("by Vlad Tomoiaga");
+  arduboy.setCursor(36,40);
+  arduboy.println("press A");
   arduboy.display();
-  delay(3000);
+  while(!arduboy.pressed(A_BUTTON));
+  delay(250);
 
         
 
@@ -124,7 +126,7 @@ void loop(){
     for(j=0;j<yblock;j++)
       if(blocks[i][j])
       {
-        if((xball>xcoord[i][j] && xball<xcoord[i][j]+xbsize+ballsize) && ymov)
+        if((xball>xcoord[i][j]-2 && xball<xcoord[i][j]+xbsize+ballsize+2) && ymov)
         {
           if(yball==ycoord[i][j])
           {
@@ -138,7 +140,6 @@ void loop(){
             breakBlock();
             soundBlock();
           }
-            
         }
           
         arduboy.drawRoundRect(xcoord[i][j],ycoord[i][j],xbsize,ybsize,1);
@@ -211,15 +212,16 @@ void loop(){
     xmov=-1;
     soundEdge();
   } 
-  if(yball==top+(ballsize+1)&&ymov)
+  if(yball<=top+(ballsize+1)&&ymov)
   {
     ymov=-1;
     soundEdge();
   }
     
-    else if(yball==bot-(ballsize+1) && ymov)
+    else if(yball>=bot-(ballsize+1) && ymov)
       {
         ymov=1;
+        
         soundEdge();
         if((xball<xpaddle-5 || xball>xpaddle+paddlesize+5) && ymov)
         {
@@ -235,8 +237,8 @@ void loop(){
           arduboy.fillCircle(xball, yball, ballsize, BLACK);
           arduboy.display();
           delay(400);
+        
         }
-          
       }
       
   if(lifes<0)
